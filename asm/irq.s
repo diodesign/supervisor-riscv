@@ -10,11 +10,13 @@
 .section .text
 .align 4
 
+.global supervisor_irq_handler
+
 # during interrupts and exceptions, reserve space for 32 registers, 32 or 64 bits wide
 .if ptrwidth == 32
 .equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 4)   # RV32
 .elseif ptrwidth == 64
-.equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 8)   # rV64
+.equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 8)   # RV64
 .else
 .error "Only 32-bit and 64-bit RISC-V supported (unexpected pointer width)"
 .endif
@@ -39,7 +41,7 @@
 
 # Entry point for supervisor-level handler of interrupts and exceptions
 # interrupts are automatically disabled on entry. we could be reentrant in
-# future tho for now, only reenable on exit
+# future, but for now: only reenable on exit
 supervisor_irq_handler:
   # stack general purpose registers, skip zero (x0) and sp (x2)
   addi  sp, sp, -(IRQ_REGISTER_FRAME_SIZE)

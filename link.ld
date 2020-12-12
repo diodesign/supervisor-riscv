@@ -1,5 +1,7 @@
 /* diosix ELF layout for system service applications on common RV32/RV64 hardware
  * 
+ * Do a cargo clean after modifying this file.
+ *
  * (c) Chris Williams, 2020.
  * See LICENSE for usage and copying.
  */
@@ -13,6 +15,7 @@ SECTIONS
 
   .text : ALIGN(0x8)
   {
+    *(.entry) /* must be first */
     *(.text*)
     *(.rodata*)
   }

@@ -22,7 +22,7 @@ macro_rules! print
     ({
         use core::fmt::Write;
         {
-            unsafe { $crate::STDOUT.write_fmt(format_args!($($arg)*)).unwrap(); }
+            unsafe { $crate::stdio::STDOUT.write_fmt(format_args!($($arg)*)).unwrap(); }
         }
     });
 }

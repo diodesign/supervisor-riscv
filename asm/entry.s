@@ -14,8 +14,10 @@
 # (c) Chris Williams, 2020.
 # See LICENSE for usage and copying.
 
+.section .entry
 .align 4
-.global main
+
+.global _start
 
 # each thread has its own stack that's 1 << SV_THREAD_STACK_SIZE_SHIFT in size
 # 18 => 256KiB stack

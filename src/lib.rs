@@ -13,9 +13,14 @@
 #![test_runner(crate::run_tests)]
 #![reexport_test_harness_main = "svriscvtests"] /* entry point for tests */
 
-mod irq;
-mod sbi;
-mod stdio;
+extern crate riscv;
+
+pub mod entry;
+pub mod irq;
+pub mod sbi;
+pub mod panic;
+#[macro_use]
+pub mod stdio;
 
 #[cfg(test)]
 fn run_tests(unit_tests: &[&dyn Fn()])
