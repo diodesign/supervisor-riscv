@@ -13,14 +13,20 @@
 #![test_runner(crate::run_tests)]
 #![reexport_test_harness_main = "svriscvtests"] /* entry point for tests */
 
+/* common routines for working with RISC-V targets */
 extern crate riscv;
 
+/* needed for lazyily-allocated static variables, and atomic ops */
+#[macro_use]
+extern crate lazy_static;
+extern crate spin;
+
+#[macro_use]
+pub mod stdio;
 pub mod entry;
 pub mod irq;
 pub mod sbi;
 pub mod panic;
-#[macro_use]
-pub mod stdio;
 
 #[cfg(test)]
 fn run_tests(unit_tests: &[&dyn Fn()])

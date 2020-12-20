@@ -7,6 +7,12 @@
 
 use core::fmt;
 use super::sbi;
+use spin::Mutex;
+
+lazy_static!
+{
+    pub static ref STDOUT: Mutex<SBIWriter> = Mutex::new(SBIWriter::new());
+}
 
 #[macro_export]
 macro_rules! println
@@ -22,13 +28,20 @@ macro_rules! print
     ({
         use core::fmt::Write;
         {
-            unsafe { $crate::stdio::STDOUT.write_fmt(format_args!($($arg)*)).unwrap(); }
+            $crate::stdio::STDOUT.lock().write_fmt(format_args!($($arg)*)).unwrap();
         }
     });
 }
 
+/* simple object that writes out bytes to output to the user via SBI calls */
 pub struct SBIWriter;
-pub static mut STDOUT: SBIWriter = SBIWriter {};
+impl SBIWriter
+{
+    pub fn new() -> SBIWriter
+    {
+        SBIWriter {}
+    }
+}
 
 impl fmt::Write for SBIWriter
 {
@@ -40,4 +53,11 @@ impl fmt::Write for SBIWriter
         }
         Ok(())
     }
+}
+
+/* ensure the STDOUT object is created and initialized */
+pub fn init()
+{
+    let stdio = STDOUT.lock();
+    drop(stdio);
 }
