@@ -7,43 +7,18 @@
 
 use core::fmt;
 use super::sbi;
-use spin::Mutex;
 
-lazy_static!
+/* simple object that writes out bytes to the user via SBI calls */
+pub struct Stdout;
+impl Stdout
 {
-    pub static ref STDOUT: Mutex<SBIWriter> = Mutex::new(SBIWriter::new());
-}
-
-#[macro_export]
-macro_rules! println
-{
-    ($fmt:expr) => ($crate::print!(concat!($fmt, "\n")));
-    ($fmt:expr, $($arg:tt)*) => ($crate::print!(concat!($fmt, "\n"), $($arg)*));
-}
-
-#[macro_export]
-macro_rules! print
-{
-    ($($arg:tt)*) =>
-    ({
-        use core::fmt::Write;
-        {
-            $crate::stdio::STDOUT.lock().write_fmt(format_args!($($arg)*)).unwrap();
-        }
-    });
-}
-
-/* simple object that writes out bytes to output to the user via SBI calls */
-pub struct SBIWriter;
-impl SBIWriter
-{
-    pub fn new() -> SBIWriter
+    pub fn new() -> Stdout
     {
-        SBIWriter {}
+        Stdout {}
     }
 }
 
-impl fmt::Write for SBIWriter
+impl fmt::Write for Stdout
 {
     fn write_str(&mut self, s: &str) -> fmt::Result
     {
@@ -53,11 +28,4 @@ impl fmt::Write for SBIWriter
         }
         Ok(())
     }
-}
-
-/* ensure the STDOUT object is created and initialized */
-pub fn init()
-{
-    let stdio = STDOUT.lock();
-    drop(stdio);
 }
