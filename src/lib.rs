@@ -8,6 +8,10 @@
 /* we're on our own */
 #![no_std]
 
+#[macro_use]
+extern crate lazy_static;
+extern crate spin;
+
 /* common routines for working with RISC-V targets */
 extern crate riscv;
 

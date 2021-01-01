@@ -8,7 +8,7 @@
 .altmacro
 
 .section .text
-.align 4
+.align 8
 
 .global supervisor_irq_handler
 

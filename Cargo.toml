@@ -9,3 +9,10 @@ publish = false
 # external dependencies
 [dependencies.riscv]
 version = "0.6.0"
+
+[dependencies.lazy_static]
+version = "1.4.0"
+features = [ "spin_no_std" ]
+
+[dependencies.spin]
+version = "0.7.0"

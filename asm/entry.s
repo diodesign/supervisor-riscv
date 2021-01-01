@@ -15,7 +15,7 @@
 # See LICENSE for usage and copying.
 
 .section .entry
-.align 4
+.align 8
 
 .global _start
 
@@ -27,7 +27,7 @@
 
 # the memory map for the system service is laid out as follows, ascending:
 #
-# .
+# . < start of memory >
 # . application executable
 # .
 # . contiguous RAM reserved for the application
@@ -37,7 +37,7 @@
 # . thread ID 0 stack
 # . initial heap block
 # . device tree structure
-# . 
+# . < end of memory >
 
 # => a0 = scheduler thread ID. the app can spawn as many local threads as it likes,
 #         though ultimately the scheduler is going to run a maximum of N threads
@@ -66,6 +66,34 @@ _start:
   li    t0, 1 << 1
   csrrs x0, sie, t0
 
+  # thread 0 needs to zero the BSS */
+  la        t0, clear_bss_finished
+  beq       x0, a0, clear_bss
+
+  # other threads need to wait for clear_bss_finished
+  # to change from zero to non-zero to indicate the BSS is clear
+clear_bss_wait_loop:
+  amoswap.w t1, x0, (t0)
+  beq       x0, t1, clear_bss_wait_loop
+  j         clear_bss_loop_end
+
+clear_bss:
+  la        t1, __bss_start
+  la        t2, __bss_end
+  bgeu      t1, t2, clear_bss_loop_end # avoid empty or malformed bss 
+clear_bss_loop:
+.if ptrwidth == 32
+  sw        x0, (t1)
+  addi      t1, t1, 4
+.else
+  sd        x0, (t1)
+  addi      t1, t1, 8
+.endif
+  bltu      t1, t2, clear_bss_loop
+clear_bss_loop_end:
+  li        t1, 1        # set clear_bss_finished to 1 now we're done
+  amoswap.w x0, t1, (t0) # t0 = clear_bss_finished
+
   # call sventry with:
   # a0 = runtime-assigned scheduler thread ID number
   # a1 = pointer to start of devicetree / end of heap structure
@@ -79,3 +107,8 @@ _start:
 # fall through to loop rather than crash into random instructions/data
 infinite_loop:
   j         infinite_loop
+
+# variables
+.align 4
+clear_bss_finished:
+.word 0
