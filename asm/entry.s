@@ -11,7 +11,7 @@
 # 
 # All values are little endian unless otherwise specified
 #
-# (c) Chris Williams, 2020.
+# (c) Chris Williams, 2020-2021.
 # See LICENSE for usage and copying.
 
 .section .entry
@@ -48,23 +48,21 @@
 # nothing to return to
 _start:
   # set up stack pointer by first skipping over the initial heap block
-  la    t0, SV_THREAD_BASE_HEAP_SIZE
-  sub   t1, a1, t0
+  la        t0, SV_THREAD_BASE_HEAP_SIZE
+  sub       t1, a1, t0
   # calculate top of thread stack for thread ID N where N is in a0
   # and store in sp
-  slli  t0, a0, SV_THREAD_STACK_SIZE_SHIFT
-  sub   sp, t1, t0
+  slli      t0, a0, SV_THREAD_STACK_SIZE_SHIFT
+  sub       sp, t1, t0
 
   # set up interrupt and exception handling
-  la    t0, supervisor_irq_handler
-  csrrw x0, stvec, t0
+  la        t0, supervisor_irq_handler
+  csrrw     x0, stvec, t0
 
   # enable supervisor interrupts and exceptions by setting bit 1
-  li    t0, 1 << 1
-  csrrs x0, sstatus, t0
+  csrrsi    x0, sstatus, 1 << 1
   # enable supervisor software interrupts by setting bit 1
-  li    t0, 1 << 1
-  csrrs x0, sie, t0
+  csrrsi    x0, sie, 1 << 1
 
   # thread 0 needs to zero the BSS */
   la        t0, clear_bss_finished
