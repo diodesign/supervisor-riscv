@@ -40,6 +40,5 @@ pub extern "C" fn sventry(_thread_id: usize, _dtb_ptr: *const u8, _dtb_len: u32)
     {
         /* shutdown this service's capsule when all threads have exited */
         sbi::shutdown(sbi::SBI_EXT_SYS_RESET_REASON::NoReason);
-        // sbi::restart(sbi::SBI_EXT_SYS_RESET_REASON::NoReason);
     }
 }
