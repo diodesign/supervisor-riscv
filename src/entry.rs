@@ -1,6 +1,6 @@
 /* diosix RV32G/RV64G supervisor-level entry point
  *
- * (c) Chris Williams, 2020.
+ * (c) Chris Williams, 2020-2021.
  *
  * See LICENSE for usage and copying.
  */
@@ -32,8 +32,12 @@ pub extern "C" fn sventry(_thread_id: usize, _dtb_ptr: *const u8, _dtb_len: u32)
     /* keep track of the number of threads entering the application */
     THREADS_RUNNING.fetch_add(1, Ordering::SeqCst);
 
-    /* call the main application's entry point */
-    unsafe { main() };
+    /* if we're running on diosix, let's go */
+    if sbi::is_diosix()
+    {
+        /* call the main application's entry point */
+        unsafe { main() };
+    }
 
     /* when number of threads left running hits zero, shut down */
     if THREADS_RUNNING.fetch_sub(1, Ordering::SeqCst) == 1
