@@ -22,54 +22,47 @@
 # each thread has its own stack that's 1 << SV_THREAD_STACK_SIZE_SHIFT in size
 # 18 => 256KiB stack
 .equ SV_THREAD_STACK_SIZE_SHIFT, (18)
-# thread ID 0 gets a block of memory to initialize the heap
-.equ SV_THREAD_BASE_HEAP_SIZE, (4 * 1024 * 1024)
 
 # the memory map for the system service is laid out as follows, ascending:
 #
-# . < start of memory >
+# . --- start of memory ---
 # . application executable
+# . --- start of heap ---
 # .
-# . contiguous RAM reserved for the application
-# . 
+# . --- end of heap ---
 # . thread ID N stack
 # . thread ID 1 stack
 # . thread ID 0 stack
-# . initial heap block
 # . device tree structure
-# . < end of memory >
+# . --- end of memory ---
 
-# => a0 = scheduler thread ID. the app can spawn as many local threads as it likes,
-#         though ultimately the scheduler is going to run a maximum of N threads
-#         at once on physical CPU cores. this ID number is guaranteed to start at 0
-#         and count upwards. thread ID 0 will manage the heap
+# => a0 = scheduler thread ID. this ID number is guaranteed to start at 0
+#         and count upwards. thread ID 0 will create the heap
 #    a1 = pointer to device tree and top of available memory from which we build
 #         descending per-thread stacks and initial heap areas
-# nothing to return to
+#    a2 = max number of threads assigned to this application service
+# <= nothing to return to
 _start:
-  # set up stack pointer by first skipping over the initial heap block
-  la        t0, SV_THREAD_BASE_HEAP_SIZE
-  sub       t1, a1, t0
-  # calculate top of thread stack for thread ID N where N is in a0
-  # and store in sp
+# calculate top of thread stack for thread ID N where N is in a0
+# stack top is in a1. store result in sp
   slli      t0, a0, SV_THREAD_STACK_SIZE_SHIFT
-  sub       sp, t1, t0
+  sub       sp, a1, t0
 
-  # set up interrupt and exception handling
+# set up interrupt and exception handling
   la        t0, supervisor_irq_handler
   csrrw     x0, stvec, t0
 
-  # enable supervisor interrupts and exceptions by setting bit 1
+# enable supervisor interrupts and exceptions by setting bit 1
   csrrsi    x0, sstatus, 1 << 1
-  # enable supervisor software interrupts by setting bit 1
+# enable supervisor software interrupts by setting bit 1
   csrrsi    x0, sie, 1 << 1
 
   # thread 0 needs to zero the BSS */
   la        t0, clear_bss_finished
   beq       x0, a0, clear_bss
 
-  # other threads need to wait for clear_bss_finished
-  # to change from zero to non-zero to indicate the BSS is clear
+# other threads need to wait for clear_bss_finished
+# to change from zero to non-zero to indicate the BSS is clear
 clear_bss_wait_loop:
   amoswap.w t1, x0, (t0)
   beq       x0, t1, clear_bss_wait_loop
@@ -92,13 +85,18 @@ clear_bss_loop_end:
   li        t1, 1        # set clear_bss_finished to 1 now we're done
   amoswap.w x0, t1, (t0) # t0 = clear_bss_finished
 
-  # call sventry with:
-  # a0 = runtime-assigned scheduler thread ID number
-  # a1 = pointer to start of devicetree / end of heap structure
-  # a2 = big-endian length of the devicetree
-  # a3 = little-endian length of the heap structure (mixing of endianness is ew)
-  lw        a2, 4(a1)       # 32-bit size of tree stored from byte 4 in tree blob
-  la        a3, SV_THREAD_BASE_HEAP_SIZE
+# every core doesn't need to do this but the entry conditions require it
+# TODO: relax sventry entry conditions for non-boot thread?
+# redefine a1, a2 as start and end of heap memory space
+# using a2 as the max CPU count and a1 as the top of the stack space
+  slli      t0, a2, SV_THREAD_STACK_SIZE_SHIFT
+  sub       a2, a1, t0
+  la        a1, __application_end
+
+# call sventry with:
+# a0 = runtime-assigned scheduler thread ID number
+# a1 = start of heap memory
+# a2 = end of heap memory
   la        t0, sventry
   jalr      ra, t0, 0
 
