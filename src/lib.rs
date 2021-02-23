@@ -7,6 +7,10 @@
 
 /* we're on our own */
 #![no_std]
+#![feature(asm)]
+#![feature(alloc_error_handler)]
+#![feature(box_syntax)]
+#![allow(unused_imports)]
 
 #[macro_use]
 extern crate lazy_static;
@@ -14,6 +18,9 @@ extern crate spin;
 
 /* common routines for working with RISC-V targets */
 extern crate riscv;
+
+/* heap allocator */
+extern crate linked_list_allocator;
 
 #[macro_use]
 pub mod stdio;
