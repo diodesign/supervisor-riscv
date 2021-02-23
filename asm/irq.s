@@ -54,6 +54,8 @@ supervisor_irq_handler:
   .endr
 
   # work out what happened using high-level code
+  # => a0 = top of the stack containing preserved registers
+  addi  a0, sp, IRQ_REGISTER_FRAME_SIZE
   call decode_irq
 
   # restore registers, skip zero (x0) and sp (x2)
