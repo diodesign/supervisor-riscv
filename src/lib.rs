@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level environment code
+/* diosix RV64G supervisor-level environment code
  *
  * (c) Chris Williams, 2020.
  *

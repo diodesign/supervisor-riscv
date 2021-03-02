@@ -1,4 +1,4 @@
-/* diosix ELF layout for system service applications on common RV32/RV64 hardware
+/* diosix ELF layout for system service applications on common RV64 hardware
  * 
  * Do a cargo clean after modifying this file.
  *

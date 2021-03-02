@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level code to input/output with the rest of the world
+/* diosix RV64G supervisor-level code to input/output with the rest of the world
  *
  * (c) Chris Williams, 2020-2021.
  *

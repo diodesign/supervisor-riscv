@@ -73,13 +73,11 @@ clear_bss:
   la        t2, __bss_end
   bgeu      t1, t2, clear_bss_loop_end # avoid empty or malformed bss 
 clear_bss_loop:
-.if ptrwidth == 32
-  sw        x0, (t1)
-  addi      t1, t1, 4
-.else
+  # for RV32 targets only
+  # sw        x0, (t1)
+  # addi      t1, t1, 4
   sd        x0, (t1)
   addi      t1, t1, 8
-.endif
   bltu      t1, t2, clear_bss_loop
 clear_bss_loop_end:
   li        t1, 1        # set clear_bss_finished to 1 now we're done

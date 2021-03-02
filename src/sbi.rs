@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level SBI veener
+/* diosix RV64G supervisor-level SBI veener
  *
  * See https://github.com/riscv/riscv-sbi-doc/blob/master/riscv-sbi.adoc
  * for more information on the SBI API

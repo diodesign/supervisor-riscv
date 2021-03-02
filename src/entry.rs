@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level entry point
+/* diosix RV64G supervisor-level entry point
  *
  * (c) Chris Williams, 2020-2021.
  *

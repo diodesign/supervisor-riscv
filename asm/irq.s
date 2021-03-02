@@ -1,4 +1,4 @@
-# supervisor low-level interrupt/exception code for RV32G/RV64G targets
+# supervisor low-level interrupt/exception code for RV64G targets
 #
 # Note: No support for F/D floating point (yet)!
 #
@@ -12,31 +12,26 @@
 
 .global supervisor_irq_handler
 
-# during interrupts and exceptions, reserve space for 32 registers, 32 or 64 bits wide
-.if ptrwidth == 32
-.equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 4)   # RV32
-.elseif ptrwidth == 64
-.equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 8)   # RV64
-.else
-.error "Only 32-bit and 64-bit RISC-V supported (unexpected pointer width)"
+.if ptrwidth != 64
+.error "Only 64-bit RISC-V supported (unexpected pointer width)"
 .endif
+
+# during interrupts and exceptions, reserve space for 32 registers, 32 or 64 bits wide
+# .equ  IRQ_REGISTER_FRAME_SIZE, (32 * 4)   # RV32
+.equ  IRQ_REGISTER_FRAME_SIZE,   (32 * 8)   # RV64
 
 # macro to generate store instructions to push given 'reg' register
 .macro PUSH_REG reg
-.if ptrwidth == 32
-  sw  x\reg, (\reg * 4)(sp)
-.else
+  # for RV32 targets only
+  # sw  x\reg, (\reg * 4)(sp)
   sd  x\reg, (\reg * 8)(sp)
-.endif
 .endm
 
 # macro to generate load instructions to pull given 'reg' register
 .macro PULL_REG reg
-.if ptrwidth == 32
-  lw  x\reg, (\reg * 4)(sp)
-.else
+  # for RV32 targets only
+  # lw  x\reg, (\reg * 4)(sp)
   ld  x\reg, (\reg * 8)(sp)
-.endif
 .endm
 
 # Entry point for supervisor-level handler of interrupts and exceptions

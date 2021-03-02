@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level exception and interrupt handler
+/* diosix RV64G supervisor-level exception and interrupt handler
  *
  * (c) Chris Williams, 2020.
  *

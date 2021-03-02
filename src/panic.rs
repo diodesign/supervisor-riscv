@@ -1,4 +1,4 @@
-/* diosix RV32G/RV64G supervisor-level panic-handling code
+/* diosix RV64G supervisor-level panic-handling code
  *
  * (c) Chris Williams, 2020.
  *
