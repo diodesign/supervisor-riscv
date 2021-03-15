@@ -19,7 +19,7 @@ lazy_static!
 #[macro_export]
 macro_rules! println
 {
-    ($fmt:expr) => (stdout!(concat!($fmt, "\n")));
+    ($fmt:expr) => (stdout!(concat!($fmt, "\r\n")));
     ($fmt:expr, $($arg:tt)*) => (stdout!(concat!($fmt, "\n"), $($arg)*));
 }
 
