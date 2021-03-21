@@ -9,6 +9,7 @@ publish = false
 # external dependencies
 [dependencies.riscv]
 version = "0.6.0"
+features = [ "inline-asm" ]
 
 [dependencies.lazy_static]
 version = "1.4.0"
