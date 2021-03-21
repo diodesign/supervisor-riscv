@@ -33,7 +33,5 @@ SECTIONS
   }
   __bss_end = ALIGN(0x8);
 
-  /DISCARD/ : { *(.eh_frame) }
-
   __application_end = ALIGN(0x1000);
 }
