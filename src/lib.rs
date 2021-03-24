@@ -11,6 +11,7 @@
 #![feature(alloc_error_handler)]
 #![feature(box_syntax)]
 #![allow(unused_imports)]
+#![feature(global_asm)]
 
 #[macro_use]
 extern crate lazy_static;
@@ -21,6 +22,10 @@ extern crate riscv;
 
 /* heap allocator */
 extern crate linked_list_allocator;
+
+/* bring in the platform-specific assembly code */
+global_asm!(include_str!("../asm/entry.s"));
+global_asm!(include_str!("../asm/irq.s"));
 
 #[macro_use]
 pub mod stdio;
