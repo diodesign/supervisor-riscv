@@ -11,24 +11,23 @@ ENTRY(_start)
 
 SECTIONS
 {
-  __application_start = .;
-
-  .text : ALIGN(0x8)
+  .text : ALIGN(0x1000)
   {
+    __application_start = .;
     *(.entry) /* must be first */
     *(.text*)
     *(.rodata*)
   }
 
-  .data : ALIGN(0x8)
+  .data : ALIGN(0x1000)
   {
     *(.data*)
   }
 
   /* this needs to be zeroed */
-  __bss_start = .;
-  .bss : ALIGN(0x8)
+  .bss : ALIGN(0x1000)
   {
+    __bss_start = .;
     *(.*bss*)
   }
   __bss_end = ALIGN(0x8);
