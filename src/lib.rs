@@ -8,10 +8,10 @@
 /* we're on our own */
 #![no_std]
 #![feature(asm)]
+#![feature(global_asm)]
 #![feature(alloc_error_handler)]
 #![feature(box_syntax)]
 #![allow(unused_imports)]
-#![feature(global_asm)]
 
 #[macro_use]
 extern crate lazy_static;

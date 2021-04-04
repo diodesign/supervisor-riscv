@@ -17,6 +17,12 @@ lazy_static!
     static ref IRQ_LOCK: Mutex<bool> = Mutex::new(false);
 }
 
+extern "C"
+{
+    fn sventry(thread_id: usize, heap_start: usize, heap_end: usize);
+}
+
+
 /* useful functions for writing out info when the rest of the environment can't be trusted */
 fn print_hex(value: usize)
 {
@@ -62,6 +68,8 @@ pub extern "C" fn decode_irq(_registers: usize)
     print_hex(scause::read().bits());
     print_string(" at 0x");
     print_hex(sepc::read());
+    print_string(" sventry 0x");
+    print_hex(sventry as usize);
     print_string(" Shutting down...\n");
 
     /* not going anywhere */
