@@ -73,9 +73,6 @@ clear_bss:
   la        t2, __bss_end
   bgeu      t1, t2, clear_bss_loop_end # avoid empty or malformed bss 
 clear_bss_loop:
-  # for RV32 targets only
-  # sw        x0, (t1)
-  # addi      t1, t1, 4
   sd        x0, (t1)
   addi      t1, t1, 8
   bltu      t1, t2, clear_bss_loop
@@ -96,7 +93,7 @@ clear_bss_loop_end:
 # a1 = start of heap memory
 # a2 = end of heap memory
   la        t0, sventry
-  jalr      ra, t0, 0
+  jalr      ra, t0
 
 # fall through to loop rather than crash into random instructions/data
 infinite_loop:
