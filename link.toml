@@ -1,0 +1,25 @@
+# diosix RV64I supervisor runtime itsylinker configuration
+#
+# (c) Chris Williams, 2021.
+# See LICENSE for usage and copying.
+
+[output]
+entry = "_start"
+start_symbol = "__application_start"
+end_symbol = "__application_start"
+alignment = 4096
+dynamic_relocation = true
+
+[section.text]
+include = [ ".entry*", ".text*", ".rodata*" ]
+alignment = 8
+
+[section.data]
+include = [ ".data*" ]
+alignment = 8
+
+[section.bss]
+include = [ ".bss*" ]
+alignment = 8
+start_symbol = "__bss_start"
+end_symbol = "__bss_end"
