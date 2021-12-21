@@ -6,7 +6,7 @@
 [output]
 entry = "_start"
 start_symbol = "__application_start"
-end_symbol = "__application_start"
+end_symbol = "__application_end"
 alignment = 4096
 dynamic_relocation = true
 
