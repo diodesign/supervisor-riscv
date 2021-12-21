@@ -5,13 +5,13 @@
  * See LICENSE for usage and copying.
  */
 
+use super::sbi;
+use core::sync::atomic::{AtomicUsize, AtomicBool, Ordering};
+use spinning::Lazy;
 use linked_list_allocator::LockedHeap;
 
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
-
-use core::sync::atomic::{AtomicUsize, AtomicBool, Ordering};
-use super::sbi;
 
 /* the application's entry point */
 extern "C"
@@ -20,11 +20,8 @@ extern "C"
 }
 
 /* reference count of cpu threads */
-lazy_static!
-{
-    static ref THREADS_RUNNING: AtomicUsize = AtomicUsize::new(0);
-    static ref INITIALIZED: AtomicBool = AtomicBool::new(false);
-}
+static THREADS_RUNNING: Lazy<AtomicUsize> = Lazy::new(|| AtomicUsize::new(0));
+static INITIALIZED: Lazy<AtomicBool> = Lazy::new(|| AtomicBool::new(false));
 
 /* initialize the environment, starting with the heap allocator */
 fn init(heap_start: usize, heap_end: usize)

@@ -7,21 +7,17 @@
 
 #![allow(unused_must_use)]
 
-use spin::Mutex;
+use spinning::{Mutex, Lazy};
 use super::sbi;
 use riscv::register::scause;
 use riscv::register::sepc;
 
-lazy_static!
-{
-    static ref IRQ_LOCK: Mutex<bool> = Mutex::new(false);
-}
+static IRQ_LOCK: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
 
 extern "C"
 {
     fn sventry(thread_id: usize, heap_start: usize, heap_end: usize);
 }
-
 
 /* useful functions for writing out info when the rest of the environment can't be trusted */
 fn print_hex(value: usize)

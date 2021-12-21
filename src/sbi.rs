@@ -8,6 +8,9 @@
  * See LICENSE for usage and copying.
  */
 
+ /* needed for inline asm */
+use core::arch::asm;
+
 /* base SBI calls */
 const SBI_EXT_BASE:                     usize = 0x10;
 const SBI_EXT_BASE_GET_IMPL_ID:         usize = 1;

@@ -5,15 +5,12 @@
  * See LICENSE for usage and copying.
  */
 
-use spin::Mutex;
+use spinning::{Mutex, Lazy};
 use core::fmt;
 use super::sbi;
 
-lazy_static!
-{
-    /* system standard output device */
-    pub static ref STDOUT: Mutex<Stdout> = Mutex::new(Stdout {});
-}
+/* system standard output device */
+pub static STDOUT: Lazy<Mutex<Stdout>> = Lazy::new(|| Mutex::new(Stdout {}));
 
 /* print a formatted string to stdout with an automatic newline added */
 #[macro_export]
